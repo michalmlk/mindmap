@@ -1,13 +1,27 @@
 "use server";
+import prisma from "@/lib/prisma";
 
 import type { Schema } from "@/app/types";
 
-export const createFlow = async (schema: Schema): Promise<void> => {
+export interface CreateFlowParams {
+  schema: Schema;
+  userId: string;
+  title: string;
+}
+
+export const createFlow = async ({
+  schema,
+  userId,
+  title,
+}: CreateFlowParams): Promise<void> => {
   // Send the schema to the backend or perform any other action
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      console.log(schema);
-      resolve();
-    }, 1000);
+  await prisma.mindmap.create({
+    data: {
+      title: title,
+      createdAt: new Date(),
+      createdBy: userId,
+      updatedAt: new Date(),
+      schema: JSON.stringify(schema),
+    },
   });
 };

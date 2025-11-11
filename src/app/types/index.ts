@@ -15,7 +15,16 @@ export interface Edge {
   target: string;
 }
 
-export type Schema = {
+export interface Schema {
   nodes: Node[];
   edges: Edge[];
-};
+}
+
+export interface Mindmap {
+  id: string;
+  title: string;
+  createdAt: Date;
+  createdBy: string;
+  updatedAt?: Date;
+  schema: Schema;
+}

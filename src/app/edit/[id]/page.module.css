@@ -1,0 +1,51 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--topbar-height));
+
+  .details {
+    width: 360px;
+    background-color: var(--color-white);
+    border-left: 1px solid var(--color-border);
+    padding: var(--spacing-md);
+    overflow-y: auto;
+
+    position: fixed;
+    top: var(--topbar-height);
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+  }
+  .header {
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--spacing-md);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+    height: 80px;
+
+    button {
+      border: none;
+      background-color: transparent;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      cursor: pointer;
+    }
+
+    .h2 {
+      font-size: var(--font-h2);
+      font-weight: 400;
+      margin-bottom: 0;
+    }
+  }
+
+  .content {
+    .editFlowContainer {
+      height: calc(
+        100vh - var(--topbar-height) - 130px
+      ); /* 120px is the height of the header + footer*/
+    }
+  }
+}

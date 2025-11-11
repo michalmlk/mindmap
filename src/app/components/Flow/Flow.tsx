@@ -22,23 +22,31 @@ import styles from "./Flow.module.css";
 import { Button } from "@/app/components/button/Button";
 
 import { useRouter } from "next/navigation";
-import type { Schema, Node, Edge } from "@/app/types";
+import type { Schema } from "@/app/types";
 import { v4 as uuidv4 } from "uuid";
 import { DEFAULT_NODE_WIDTH } from "@/app/constants";
+import type { CreateFlowParams } from "@/app/actions/createFlow";
 
-const initialNodes: Node[] = [
-  { id: "n1", position: { x: 0, y: 0 }, data: { label: "Node 1" } },
-  { id: "n2", position: { x: 0, y: 100 }, data: { label: "Node 2" } },
-];
-const initialEdges: Edge[] = [{ id: "n1-n2", source: "n1", target: "n2" }];
+type FlowProps =
+  | {
+      type: "create";
+      onCreate: (params: CreateFlowParams) => Promise<void>;
+      initialSchema: Schema;
+      className?: string;
+    }
+  | {
+      type: "save";
+      onSave: (schema: Schema, id: string) => Promise<void>;
+      initialSchema: Schema;
+      id: string;
+      className?: string;
+    };
 
-interface FlowProps {
-  onCreate: (schema: Schema) => Promise<void>;
-}
+export const Flow = (props: FlowProps) => {
+  const { initialSchema, type } = props;
 
-export const Flow = ({ onCreate }: FlowProps) => {
-  const [nodes, setNodes] = useNodesState(initialNodes);
-  const [edges, setEdges] = useEdgesState(initialEdges);
+  const [nodes, setNodes] = useNodesState(initialSchema.nodes);
+  const [edges, setEdges] = useEdgesState(initialSchema.edges);
 
   const flowWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -63,14 +71,23 @@ export const Flow = ({ onCreate }: FlowProps) => {
     router.push("/");
   };
 
-  const onHandleCreate = async (): Promise<void> => {
+  const onSaveAction = async (): Promise<void> => {
     const schema = {
       nodes,
       edges,
     };
 
     // Send the schema to the backend or perform any other action
-    await onCreate(schema);
+    //
+    if (type === "save") {
+      await props.onSave(schema, props.id);
+    } else if (type === "create") {
+      await props.onCreate({
+        schema,
+        title: "New Flow",
+        userId: "michalmlk",
+      });
+    }
   };
 
   const { screenToFlowPosition } = useReactFlow();
@@ -112,7 +129,7 @@ export const Flow = ({ onCreate }: FlowProps) => {
 
   return (
     <>
-      <div className={styles.flowContainer}>
+      <div className={`${styles.flowContainer} ${props.className}`}>
         <ReactFlow
           ref={flowWrapperRef}
           className={styles.flow}
@@ -132,7 +149,7 @@ export const Flow = ({ onCreate }: FlowProps) => {
       </div>
       <footer className={styles.footer}>
         <Button label="Back" onClick={handleBack} />
-        <Button label="Save" primary onClick={onHandleCreate} />
+        <Button label="Save" primary onClick={onSaveAction} />
       </footer>
     </>
   );
