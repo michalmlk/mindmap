@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import styles from "./Topbar.module.css";
+import type { ReactNode } from "react";
 
 interface TopbarItem {
   id: string;
@@ -15,7 +16,7 @@ const topbarItems: TopbarItem[] = [
   { id: "saved", label: "Saved mindmaps", to: "/saved" },
 ];
 
-export const Topbar = (): JSX.Element => {
+export const Topbar = (): ReactNode => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>

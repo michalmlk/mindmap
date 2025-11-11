@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import styles from "./Button.module.css";
 
 interface ButtonProps {
@@ -14,7 +15,7 @@ export const Button = ({
   onClick,
   primary = false,
   type = "button",
-}: ButtonProps): JSX.Element => {
+}: ButtonProps): ReactNode => {
   return (
     <button
       type={type}
