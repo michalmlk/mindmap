@@ -1,6 +1,6 @@
 "use server";
 
-import type { Schema } from "@/types";
+import type { Schema } from "@/app/types";
 
 export const createFlow = async (schema: Schema): Promise<void> => {
   // Send the schema to the backend or perform any other action

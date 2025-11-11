@@ -5,7 +5,7 @@ export interface Node {
     y: number;
   };
   data: {
-    label: string;
+    label?: string;
   };
 }
 
@@ -13,7 +13,6 @@ export interface Edge {
   id: string;
   source: string;
   target: string;
-  label?: string;
 }
 
 export type Schema = {

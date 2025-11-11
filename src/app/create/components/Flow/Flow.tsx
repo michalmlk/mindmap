@@ -12,6 +12,9 @@ import {
   MiniMap,
   Controls,
   Background,
+  OnNodesChange,
+  OnEdgesChange,
+  OnConnect,
   OnConnectEnd,
 } from "@xyflow/react";
 import { useCallback, useRef } from "react";
@@ -19,15 +22,15 @@ import styles from "./Flow.module.css";
 import { Button } from "@/app/components/button/Button";
 
 import { useRouter } from "next/navigation";
-import type { Schema } from "@/app/types";
+import type { Schema, Node, Edge } from "@/app/types";
 import { v4 as uuidv4 } from "uuid";
 import { DEFAULT_NODE_WIDTH } from "@/app/constants";
 
-const initialNodes = [
+const initialNodes: Node[] = [
   { id: "n1", position: { x: 0, y: 0 }, data: { label: "Node 1" } },
   { id: "n2", position: { x: 0, y: 100 }, data: { label: "Node 2" } },
 ];
-const initialEdges = [{ id: "n1-n2", source: "n1", target: "n2" }];
+const initialEdges: Edge[] = [{ id: "n1-n2", source: "n1", target: "n2" }];
 
 interface FlowProps {
   onCreate: (schema: Schema) => Promise<void>;
@@ -39,17 +42,17 @@ export const Flow = ({ onCreate }: FlowProps) => {
 
   const flowWrapperRef = useRef<HTMLDivElement>(null);
 
-  const onNodesChange = useCallback(
+  const onNodesChange: OnNodesChange = useCallback(
     (changes) =>
       setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
     [setNodes],
   );
-  const onEdgesChange = useCallback(
+  const onEdgesChange: OnEdgesChange = useCallback(
     (changes) =>
       setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
     [setEdges],
   );
-  const onConnect = useCallback(
+  const onConnect: OnConnect = useCallback(
     (params) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
     [setEdges],
   );
@@ -72,15 +75,15 @@ export const Flow = ({ onCreate }: FlowProps) => {
 
   const { screenToFlowPosition } = useReactFlow();
 
-  const onConnectEnd = (event, params): void => {
+  const onConnectEnd: OnConnectEnd = (event, params): void => {
     const { fromNode } = params;
 
     const graphPosition = screenToFlowPosition({
-      x: event.clientX,
-      y: event.clientY,
+      x: (event as MouseEvent).clientX,
+      y: (event as MouseEvent).clientY,
     });
 
-    if (!flowWrapperRef.current) {
+    if (!flowWrapperRef.current || !fromNode) {
       return;
     }
 
@@ -97,6 +100,7 @@ export const Flow = ({ onCreate }: FlowProps) => {
       },
       data: { label: "New Node" },
     };
+
     const newEdge = {
       id: uuidv4(),
       source: fromNode.id,
